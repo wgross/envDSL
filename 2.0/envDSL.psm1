@@ -68,10 +68,10 @@ function computer {
 function Get-CurrentAndKnownHostNames {
     return @(
         $Host.Name
-        "ConsoleHost" 
-        "Windows PowerShell ISE Host"
-        "PowerShell Tools for Visual Studio Host"
-        "PowerShell Server"
+        '"ConsoleHost"'
+        '"Windows PowerShell ISE Host"'
+        '"PowerShell Tools for Visual Studio Host"'
+        '"PowerShell Server"'
     ) | Sort-Object -Unique
 }
 
@@ -83,7 +83,7 @@ function powershellHost {
     [CmdletBinding()]
     param(
         [Parameter(Position=0,ParameterSetName="byKnownHostname")]
-        [ArgumentCompleter({Get-CurrentAndKnownHostNames})]
+        [ArgumentCompleter({ Get-CurrentAndKnownHostNames })]
         [string[]]$Names,
         [Parameter(Mandatory=$true,Position=1)]
         [scriptblock]$ContinueWith
