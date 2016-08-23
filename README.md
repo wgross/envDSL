@@ -1,5 +1,5 @@
 # envDSL
-Powershell module implementing a simple DSL to implement profiles depending on attributes of the current execution environment.
+Powershell module providing a simple DSL to implement profiles depending on attributes of the current execution environment like computer name and powershell host name. 
 
 ## Execute Code Depending on the Computer Name
 
