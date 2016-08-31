@@ -108,9 +108,13 @@ function powershellHost {
 function Add-EnvPath {
     <#
     .SYNOPSIS
-        Adds the specified pathes to an environment variable if it doesn't already contain the pathes.
+        Adds the specified pathes to an environment variable
     .DESCRIPTION
-        If an array is specified the relative order is optained. 
+        If an array is specified the relative order is optained. Pathes can be appende d or prependend or both.
+        If the path is already contained in the variable, it is removed from its current place and agein appended or prepended
+        as specified.
+    .PARAMETER Separator
+        Specifies the seperator character used by the edited path variable. On windows this usually ';' on unix ':'.
     #>
     param(
         [Parameter(Mandatory=$true)]
@@ -122,14 +126,18 @@ function Add-EnvPath {
 
         [Parameter(Mandatory=$false)]
         [ValidateNotNullOrEmpty()]
-        [string[]]$Append
+        [string[]]$Append,
+
+        [Parameter(Mandatory=$false)]
+        [ArgumentCompleter({'";"';'":"'})]
+        [string]$Separator = ";"
     )
     process {
         
         # split the current content into a list of entries. Pathes are seperated with ';'
         [System.Collections.Generic.List[string]]$splitted = [System.Collections.Generic.List[string]]::new()
         if(Test-Path $Path) {
-            [System.Collections.Generic.List[string]]$splitted = [System.Linq.Enumerable]::ToList((Get-Content -Path $Path) -split ";")
+            [System.Collections.Generic.List[string]]$splitted = [System.Linq.Enumerable]::ToList((Get-Content -Path $Path) -split $Separator)
         }
 
         if($Append) {
@@ -160,7 +168,7 @@ function Add-EnvPath {
                 }
             } 
         }
-        Set-Content -Path $Path -Value ([string]::Join(";",($splitted | Where-Object { ![string]::IsNullOrWhiteSpace($_) })))
+        Set-Content -Path $Path -Value ([string]::Join($Separator,($splitted | Where-Object { ![string]::IsNullOrWhiteSpace($_) })))
     }
 }
 
