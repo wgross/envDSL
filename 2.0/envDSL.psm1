@@ -130,7 +130,7 @@ function Add-EnvPath {
 
         [Parameter(Mandatory=$false)]
         [ArgumentCompleter({'";"';'":"'})]
-        [string]$Separator = ";"
+        [string]$Separator = $(if($PWD.Path.Contains(":")) { return ";" } else { return ":" })
     )
     process {
         
