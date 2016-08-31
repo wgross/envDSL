@@ -103,9 +103,9 @@ function powershellHost {
 
 #endregion 
 
-#region Add-EnvPathVariable
+#region Edit-PathVariableContent
 
-function Add-EnvPath {
+function Edit-PathVariableContent {
     <#
     .SYNOPSIS
         Adds the specified pathes to an environment variable
