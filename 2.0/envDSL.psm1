@@ -110,11 +110,18 @@ function Edit-PathVariableContent {
     .SYNOPSIS
         Adds the specified pathes to an environment variable
     .DESCRIPTION
-        If an array is specified the relative order is optained. Pathes can be appende d or prependend or both.
+        If an array is specified the relative order is obtained. Pathes can be appended or prependend or both.
         If the path is already contained in the variable, it is removed from its current place and agein appended or prepended
         as specified.
+    .PARAMETER Path
+        The path to the variables content like: Env:\VariableName
     .PARAMETER Separator
         Specifies the seperator character used by the edited path variable. On windows this usually ';' on unix ':'.
+        A default value is guessed from the current value of the $PWD variable.
+    .EXAMPLE  
+        Edit-PathVariableContent -Path Env:\Path -Append "C:\tmp\"
+
+        Appends the path c:\tmp to the execution path environment variable.
     #>
     param(
         [Parameter(Mandatory=$true)]
