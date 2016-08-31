@@ -1,14 +1,4 @@
-#region $env:Computername or /bin/hostname
-
-function Get-ComputerName {
-    if(Test-Path Env:\COMPUTERNAME) {
-        return $env:COMPUTERNAME
-    } elseif(Test-Path "/bin/hostname") {
-        return $(/bin/hostname -s)
-    } else {
-        return "UNKNOWN"
-    }
-}
+#region Computername
 
 function computer {
     <#
@@ -26,7 +16,7 @@ function computer {
     [CmdletBinding(DefaultParameterSetName="byComputername")]
     param(
         [Parameter(Position=0,ParameterSetName="byComputername")]
-        [ArgumentCompleter({Get-ComputerName})]
+        [ArgumentCompleter({[System.Environment]::MachineName})]
         [string[]]$Names,
         [Parameter(Mandatory=$true,Position=1)]
         [scriptblock]$ContinueWith,
@@ -35,7 +25,7 @@ function computer {
     )
     process {
         
-        $computerName = Get-ComputerName
+        $computerName = [System.Environment]::MachineName
         
         # determine if the script block has to be executed.
 
@@ -113,14 +103,25 @@ function powershellHost {
 
 #endregion 
 
-#region Add-EnvPathVariable
+#region Edit-PathVariableContent
 
-function Add-EnvPath {
+function Edit-PathVariableContent {
     <#
     .SYNOPSIS
-        Adds the specified pathes to an environment variable if it doesn't already contain the pathes.
+        Adds the specified pathes to an environment variable
     .DESCRIPTION
-        If an array is specified the relative order is optained. 
+        If an array is specified the relative order is obtained. Pathes can be appended or prependend or both.
+        If the path is already contained in the variable, it is removed from its current place and agein appended or prepended
+        as specified.
+    .PARAMETER Path
+        The path to the variables content like: Env:\VariableName
+    .PARAMETER Separator
+        Specifies the seperator character used by the edited path variable. On windows this usually ';' on unix ':'.
+        A default value is guessed from the current value of the $PWD variable.
+    .EXAMPLE  
+        Edit-PathVariableContent -Path Env:\Path -Append "C:\tmp\"
+
+        Appends the path c:\tmp to the execution path environment variable.
     #>
     param(
         [Parameter(Mandatory=$true)]
@@ -132,14 +133,18 @@ function Add-EnvPath {
 
         [Parameter(Mandatory=$false)]
         [ValidateNotNullOrEmpty()]
-        [string[]]$Append
+        [string[]]$Append,
+
+        [Parameter(Mandatory=$false)]
+        [ArgumentCompleter({'";"';'":"'})]
+        [string]$Separator = $(if($PWD.Path.Contains(":")) { return ";" } else { return ":" })
     )
     process {
         
         # split the current content into a list of entries. Pathes are seperated with ';'
         [System.Collections.Generic.List[string]]$splitted = [System.Collections.Generic.List[string]]::new()
         if(Test-Path $Path) {
-            [System.Collections.Generic.List[string]]$splitted = [System.Linq.Enumerable]::ToList((Get-Content -Path $Path) -split ";")
+            [System.Collections.Generic.List[string]]$splitted = [System.Linq.Enumerable]::ToList((Get-Content -Path $Path) -split $Separator)
         }
 
         if($Append) {
@@ -170,9 +175,10 @@ function Add-EnvPath {
                 }
             } 
         }
-        Set-Content -Path $Path -Value ([string]::Join(";",($splitted | Where-Object { ![string]::IsNullOrWhiteSpace($_) })))
+        Set-Content -Path $Path -Value ([string]::Join($Separator,($splitted | Where-Object { ![string]::IsNullOrWhiteSpace($_) })))
     }
 }
+
 #endregion 
 
 #region Test-AdmnUser
