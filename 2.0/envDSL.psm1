@@ -1,14 +1,4 @@
-#region $env:Computername or /bin/hostname
-
-function Get-ComputerName {
-    if(Test-Path Env:\COMPUTERNAME) {
-        return $env:COMPUTERNAME
-    } elseif(Test-Path "/bin/hostname") {
-        return $(/bin/hostname -s)
-    } else {
-        return "UNKNOWN"
-    }
-}
+#region Computername
 
 function computer {
     <#
@@ -26,7 +16,7 @@ function computer {
     [CmdletBinding(DefaultParameterSetName="byComputername")]
     param(
         [Parameter(Position=0,ParameterSetName="byComputername")]
-        [ArgumentCompleter({Get-ComputerName})]
+        [ArgumentCompleter({[System.Environment]::MachineName})]
         [string[]]$Names,
         [Parameter(Mandatory=$true,Position=1)]
         [scriptblock]$ContinueWith,
@@ -35,7 +25,7 @@ function computer {
     )
     process {
         
-        $computerName = Get-ComputerName
+        $computerName = [System.Environment]::MachineName
         
         # determine if the script block has to be executed.
 
@@ -173,6 +163,7 @@ function Add-EnvPath {
         Set-Content -Path $Path -Value ([string]::Join(";",($splitted | Where-Object { ![string]::IsNullOrWhiteSpace($_) })))
     }
 }
+
 #endregion 
 
 #region Test-AdmnUser
