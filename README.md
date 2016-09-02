@@ -10,7 +10,7 @@ computer "computer Name" {
   ...
 }
 ```
-The name of the computer is determined by reading the environment variable 'COMUTERNAME' on windows or, if avaliable by calling '/bin/hostname -s'
+The name of the computer is determined by reading the System.Environment.MachineName property.
 
 ## Excecute Code Depending on the Powershell Host Name
 
@@ -20,7 +20,7 @@ powershellHostname "ConsoleHost" {
     ...
 }
 ```
-The name of the console ist taken from (Get-Host).Name. This should be compatibel with all platforms Core and classic .Net.
+The name of the console ist taken from (Get-Host).Name. This should be compatible with all platforms: Core and classic .Net.
 
 ##  Guard Code which needs Admin Rights
 
@@ -30,7 +30,7 @@ if(Test-AdminUser) {
   ...
 }
 ```
-This Cmdlet look at current windows pricipal to determin Admin rights. 
+This Cmdlet look at current windows principal to determine Admin rights. Obvioulsy this is not working on .Net Core.
 
 ## Manipulate Path Variables
 
@@ -38,5 +38,5 @@ This Cmdlet look at current windows pricipal to determin Admin rights.
 Edit-PathVariableContent -Path Env:\Path -Append "c:\tools\bin"
 ```
 
-this Cmdlet can append or prepend directory names (or lists of directory name) to the specified path-variable. pThaes are sepearted by ';'.
-If a path with the same name is already contains in the list of directories from teh variable, it ist removed and appended/prepended again.
+this Cmdlet can append or prepend directory names (or lists of directory names) to the specified path-variable. Pathes are separted by ';' or ':' on unix.
+If a path with the same name is already contained in the list of directories of the variable, it ist removed and appended/prepended again.
