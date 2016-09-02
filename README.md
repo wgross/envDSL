@@ -1,5 +1,6 @@
 # envDSL
-Powershell module providing a simple DSL to implement profiles depending on attributes of the current execution environment like computer name and powershell host name. 
+
+Powershell module providing a simple DSL to implement profiles depending on attributes of the current execution environment like computer name and powershell host name. It also provides a Cmdlet Edit-PathVariableContent to change a the content of a variable holding a collection of pathes separated with ';' or ':' alternatively.
 
 ## Execute Code Depending on the Computer Name
 
@@ -34,7 +35,7 @@ This Cmdlet look at current windows pricipal to determin Admin rights.
 ## Manipulate Path Variables
 
 ```
-Add-EnvPath -Path Env:\Path -Append "c:\tools\bin"
+Edit-PathVariableContent -Path Env:\Path -Append "c:\tools\bin"
 ```
 
 this Cmdlet can append or prepend directory names (or lists of directory name) to the specified path-variable. pThaes are sepearted by ';'.
