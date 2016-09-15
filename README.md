@@ -30,7 +30,7 @@ if(Test-AdminUser) {
   ...
 }
 ```
-This Cmdlet look at current windows principal to determine Admin rights. Obvioulsy this is not working on .Net Core.
+This Cmdlet looks at the current windows principal to determine if Admin rights are avaliable. Obviously this is not working on .Net Core.
 
 ## Manipulate Path Variables
 
