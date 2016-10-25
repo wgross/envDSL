@@ -189,17 +189,20 @@ function Get-EnvVariable {
         Reads the values of an environment variable from process, user and machine
     #>
     param(
-        [Parameter(Mandatory,ValueFromPipelineByPropertyName)]
+        [Parameter(Position=0,ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
-        [string]$Name
+        [ArgumentCompleter({$wordToComplete = $args[2]; ([Environment]::GetEnvironmentVariables()).Keys | Where-Object { $_.StartsWith($wordToComplete, [System.StringComparison]::OrdinalIgnoreCase) }})]
+        [string[]]$Name = (([Environment]::GetEnvironmentVariables()).Keys)
     )
     process {
-        [psobject]@{
-            name = $Name
-            value =[psobject]@{
-                process = [System.Environment]::GetEnvironmentVariable($Name,[System.EnvironmentVariableTarget]::Process)
-                user = [System.Environment]::GetEnvironmentVariable($Name,[System.EnvironmentVariableTarget]::User)
-                machine = [System.Environment]::GetEnvironmentVariable($Name,[System.EnvironmentVariableTarget]::Machine) 
+        $Name | ForEach-Object {
+            [psobject]@{
+                name = $_
+                value =[psobject]@{
+                    process = [System.Environment]::GetEnvironmentVariable($_,[System.EnvironmentVariableTarget]::Process)
+                    user = [System.Environment]::GetEnvironmentVariable($_,[System.EnvironmentVariableTarget]::User)
+                    machine = [System.Environment]::GetEnvironmentVariable($_,[System.EnvironmentVariableTarget]::Machine) 
+                }
             }
         }       
     }
@@ -211,11 +214,12 @@ function Set-EnvVariable {
         Writes the values of an environment variable to process, user or machine
     #>
     param(
-        [Parameter(Mandatory,ValueFromPipelineByPropertyName)]
+        [Parameter(Position=0,Mandatory,ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
+        [ArgumentCompleter({$wordToComplete = $args[2]; ([Environment]::GetEnvironmentVariables()).Keys | Where-Object { $_.StartsWith($wordToComplete, [System.StringComparison]::OrdinalIgnoreCase) }})]
         [string]$Name,
 
-        [Parameter(Mandatory,ValueFromPipelineByPropertyName)]
+        [Parameter(Position=0,Mandatory,ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [string]$Value,
 
