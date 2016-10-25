@@ -181,7 +181,61 @@ function Edit-PathVariableContent {
 
 #endregion 
 
-#region Test-AdmnUser
+#region Read environment variables
+
+function Get-EnvVariable {
+    <#
+    .SYNOPSIS
+        Reads the values of an environment variable from process, user and machine
+    #>
+    param(
+        [Parameter(Mandatory,ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
+        [string]$Name
+    )
+    process {
+        [psobject]@{
+            name = $Name
+            value =[psobject]@{
+                process = [System.Environment]::GetEnvironmentVariable($Name,[System.EnvironmentVariableTarget]::Process)
+                user = [System.Environment]::GetEnvironmentVariable($Name,[System.EnvironmentVariableTarget]::User)
+                machine = [System.Environment]::GetEnvironmentVariable($Name,[System.EnvironmentVariableTarget]::Machine) 
+            }
+        }       
+    }
+}
+
+function Set-EnvVariable {
+    <#
+    .SYNOPSIS
+        Writes the values of an environment variable to process, user or machine
+    #>
+    param(
+        [Parameter(Mandatory,ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
+        [string]$Name,
+
+        [Parameter(Mandatory,ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
+        [string]$Value,
+
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNull()]
+        [System.EnvironmentVariableTarget]$Target
+    )
+    process {
+        if($Target) {
+            [System.Environment]::SetEnvironmentVariable($Name,$Value,$Target)
+        } else {
+            [System.Environment]::SetEnvironmentVariable($Name,$Value)
+        }
+    }
+}
+
+
+#endregion 
+
+#region Test-AdminUser
 
 function Test-AdminUser {
     param(
