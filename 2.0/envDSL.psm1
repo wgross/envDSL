@@ -181,7 +181,14 @@ function Edit-PathVariableContent {
 
 #endregion 
 
-#region Read environment variables
+#region Edit environment variables
+
+class EnvironentVariableInfo {
+    [string]$Name
+    [string]$Machine
+    [string]$User
+    [string]$Process
+}
 
 function Get-EnvVariable {
     <#
@@ -196,13 +203,11 @@ function Get-EnvVariable {
     )
     process {
         $Name | ForEach-Object {
-            [psobject]@{
-                name = $_
-                value =[psobject]@{
-                    process = [System.Environment]::GetEnvironmentVariable($_,[System.EnvironmentVariableTarget]::Process)
-                    user = [System.Environment]::GetEnvironmentVariable($_,[System.EnvironmentVariableTarget]::User)
-                    machine = [System.Environment]::GetEnvironmentVariable($_,[System.EnvironmentVariableTarget]::Machine) 
-                }
+            [EnvironentVariableInfo]@{
+                Name = $_
+                Process = [System.Environment]::GetEnvironmentVariable($_,[System.EnvironmentVariableTarget]::Process)
+                User = [System.Environment]::GetEnvironmentVariable($_,[System.EnvironmentVariableTarget]::User)
+                Machine = [System.Environment]::GetEnvironmentVariable($_,[System.EnvironmentVariableTarget]::Machine) 
             }
         }       
     }
@@ -235,7 +240,6 @@ function Set-EnvVariable {
         }
     }
 }
-
 
 #endregion 
 
