@@ -181,7 +181,69 @@ function Edit-PathVariableContent {
 
 #endregion 
 
-#region Test-AdmnUser
+#region Edit environment variables
+
+class EnvironentVariableInfo {
+    [string]$Name
+    [string]$Machine
+    [string]$User
+    [string]$Process
+}
+
+function Get-EnvVariable {
+    <#
+    .SYNOPSIS
+        Reads the values of an environment variable from process, user and machine
+    #>
+    param(
+        [Parameter(Position=0,ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
+        [ArgumentCompleter({$wordToComplete = $args[2]; ([Environment]::GetEnvironmentVariables()).Keys | Where-Object { $_.StartsWith($wordToComplete, [System.StringComparison]::OrdinalIgnoreCase) }})]
+        [string[]]$Name = (([Environment]::GetEnvironmentVariables()).Keys)
+    )
+    process {
+        $Name | ForEach-Object {
+            [EnvironentVariableInfo]@{
+                Name = $_
+                Process = [System.Environment]::GetEnvironmentVariable($_,[System.EnvironmentVariableTarget]::Process)
+                User = [System.Environment]::GetEnvironmentVariable($_,[System.EnvironmentVariableTarget]::User)
+                Machine = [System.Environment]::GetEnvironmentVariable($_,[System.EnvironmentVariableTarget]::Machine) 
+            }
+        }       
+    }
+}
+
+function Set-EnvVariable {
+    <#
+    .SYNOPSIS
+        Writes the values of an environment variable to process, user or machine
+    #>
+    param(
+        [Parameter(Position=0,Mandatory,ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
+        [ArgumentCompleter({$wordToComplete = $args[2]; ([Environment]::GetEnvironmentVariables()).Keys | Where-Object { $_.StartsWith($wordToComplete, [System.StringComparison]::OrdinalIgnoreCase) }})]
+        [string]$Name,
+
+        [Parameter(Position=0,Mandatory,ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
+        [string]$Value,
+
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [ValidateNotNull()]
+        [System.EnvironmentVariableTarget]$Target
+    )
+    process {
+        if($Target) {
+            [System.Environment]::SetEnvironmentVariable($Name,$Value,$Target)
+        } else {
+            [System.Environment]::SetEnvironmentVariable($Name,$Value)
+        }
+    }
+}
+
+#endregion 
+
+#region Test-AdminUser
 
 function Test-AdminUser {
     param(
