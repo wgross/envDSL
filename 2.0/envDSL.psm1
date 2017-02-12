@@ -1,3 +1,6 @@
+using namespace System.Linq
+using namespace System.Collections.Generic
+
 #region Computername
 
 function computer {
@@ -142,13 +145,13 @@ function Edit-PathVariableContent {
     process {
         
         # split the current content into a list of entries. Pathes are seperated with ';'
-        [System.Collections.Generic.List[string]]$splitted = [System.Collections.Generic.List[string]]::new()
-        if(Test-Path $Path) {
-            [System.Collections.Generic.List[string]]$splitted = [System.Linq.Enumerable]::ToList((Get-Content -Path $Path) -split $Separator)
+        [List[string]]$splitted = [List[string]]::new()
+        if(Test-Path -Path $Path) {
+            [List[string]]$splitted = [Enumerable]::ToList((Get-Content -Path $Path) -split $Separator)
         }
 
         if($Append) {
-            $Append | ForEach-Object {
+            $Append | ForEach-Object -Process {
                 if($splitted.Contains($_)) {
                     $splitted.Remove($_) | Out-Null
                     Write-Verbose "Removed before adding $_"
@@ -164,7 +167,7 @@ function Edit-PathVariableContent {
             # ==> The relative order is obtained because the first item is prepended as the last and is 
             #     therefore the first in the result path
             [array]::Reverse($Prepend)
-            $Prepend | ForEach-Object {
+            $Prepend | ForEach-Object -Process {
                 if($splitted.Contains($_)) {
                     $splitted.Remove($_) | Out-Null
                     Write-Verbose "Removed before adding $_"
@@ -175,10 +178,34 @@ function Edit-PathVariableContent {
                 }
             } 
         }
-        Set-Content -Path $Path -Value ([string]::Join($Separator,($splitted | Where-Object { ![string]::IsNullOrWhiteSpace($_) })))
+        Set-Content -Path $Path -Value ([string]::Join($Separator,($splitted | Where-Object -FilterScript { ![string]::IsNullOrWhiteSpace($_) })))
     }
 }
 
+function Test-PathVariableContent {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$Path,
+
+        [Parameter(Mandatory=$false)]
+        [ArgumentCompleter({'";"';'":"'})]
+        [string]$Separator = $(if($PWD.Path.Contains(":")) { return ";" } else { return ":" })
+    )
+    process {
+        [List[string]]$splitted = [List[string]]::new()
+        if(Test-Path -Path $Path) {
+            [List[string]]$splitted = [Enumerable]::ToList((Get-Content -Path $Path) -split $Separator)
+        }
+        
+        $splitted | Where-Object -FilterScript { ![string]::IsNullOrEmpty($_) } | ForEach-Object -Process {
+            # test every path item and return item with result
+            [pscustomobject]@{
+                Path = $_
+                Exists = (Test-Path -Path $_)
+            }
+        }
+    }
+}
 #endregion 
 
 #region Edit environment variables

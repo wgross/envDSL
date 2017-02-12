@@ -110,7 +110,7 @@ Describe "Edit-PathVariableContentVariable" {
         }
     }
 
-    Context "The platform is unic and the separator is ':'" {
+    Context "The platform is unique and the separator is ':'" {
         BeforeAll {
             Remove-Item "Env:\samplePath" -ErrorAction SilentlyContinue
         }
@@ -178,5 +178,17 @@ Describe "Test-AdminUser" {
         } catch {
             $_.ToString() | Should Be "Not Admin"
         }
+    }
+}
+
+Describe "Test-PathVariableContent" {
+    It "Returns false for an unexisting path item" {
+        $env:badContent = "c:\doesntexist"
+        (Test-PathVariableContent -Path "env:badcontent").Exists | Should Be $false
+    }
+
+    It "Returns true for an unexisting path item" {
+        $env:goodContent = $PWD
+        (Test-PathVariableContent -Path "env:goodContent").Exists | Should Be $true
     }
 }
