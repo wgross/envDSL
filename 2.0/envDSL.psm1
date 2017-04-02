@@ -65,6 +65,7 @@ function Get-CurrentAndKnownHostNames {
         '"Windows PowerShell ISE Host"'
         '"PowerShell Tools for Visual Studio Host"'
         '"PowerShell Server"'
+        '"ServerRemoteHost"'
     ) | Sort-Object -Unique
 }
 
