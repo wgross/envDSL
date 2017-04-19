@@ -1,5 +1,7 @@
+using namespace System
 using namespace System.Linq
 using namespace System.Collections.Generic
+using namespace System.Security.Principal
 
 #region Computername
 
@@ -207,11 +209,12 @@ function Test-PathVariableContent {
         }
     }
 }
+
 #endregion 
 
 #region Edit environment variables
 
-class EnvironentVariableInfo {
+class EnvironmentVariableInfo {
     [string]$Name
     [string]$Machine
     [string]$User
@@ -231,11 +234,11 @@ function Get-EnvVariable {
     )
     process {
         $Name | ForEach-Object {
-            [EnvironentVariableInfo]@{
+            [EnvironmentVariableInfo]@{
                 Name = $_
-                Process = [System.Environment]::GetEnvironmentVariable($_,[System.EnvironmentVariableTarget]::Process)
-                User = [System.Environment]::GetEnvironmentVariable($_,[System.EnvironmentVariableTarget]::User)
-                Machine = [System.Environment]::GetEnvironmentVariable($_,[System.EnvironmentVariableTarget]::Machine) 
+                Process = [Environment]::GetEnvironmentVariable($_,[EnvironmentVariableTarget]::Process)
+                User = [Environment]::GetEnvironmentVariable($_,[EnvironmentVariableTarget]::User)
+                Machine = [Environment]::GetEnvironmentVariable($_,[EnvironmentVariableTarget]::Machine) 
             }
         }       
     }
@@ -258,13 +261,13 @@ function Set-EnvVariable {
 
         [Parameter(ValueFromPipelineByPropertyName)]
         [ValidateNotNull()]
-        [System.EnvironmentVariableTarget]$Target
+        [EnvironmentVariableTarget]$Target
     )
     process {
         if($Target) {
-            [System.Environment]::SetEnvironmentVariable($Name,$Value,$Target)
+            [Environment]::SetEnvironmentVariable($Name,$Value,$Target)
         } else {
-            [System.Environment]::SetEnvironmentVariable($Name,$Value)
+            [Environment]::SetEnvironmentVariable($Name,$Value)
         }
     }
 }
@@ -279,11 +282,13 @@ function Test-AdminUser {
         $Throw
     )
     process {
-        $isInRole = (New-Object System.Security.Principal.WindowsPrincipal([System.Security.Principal.WindowsIdentity]::GetCurrent())).IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator)
-        if($PSBoundParameters.ContainsKey("Throw")) {
+        if([WindowsPrincipal]::new([WindowsIdentity]::GetCurrent()).IsInRole([WindowsBuiltInRole]::Administrator)) {
+            return $true
+        } elseif($PSBoundParameters.ContainsKey("Throw")) {
             throw ($Throw)
+        } else {
+            return $false
         }
-        return $isInRole
     }
 }
  
