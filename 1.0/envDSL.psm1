@@ -1,4 +1,4 @@
-﻿Write-Host "Loading module envDSL..."
+Write-Host "Loading module envDSL..."
 
 Get-ChildItem $PSScriptRoot -Include *.ps1 -Recurse | ForEach-Object { . $_.FullName }
 

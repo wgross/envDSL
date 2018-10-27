@@ -1,4 +1,4 @@
-﻿function powershellHost {
+function powershellHost {
     <#
     .SYNOPSIS
         Executes a script block if Get-Host is of the given type.
@@ -50,4 +50,5 @@
         }
     }
 }
+
 

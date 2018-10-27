@@ -1,4 +1,4 @@
-﻿function workingDirectory {
+function workingDirectory {
     <#
     .SYNOPSIS
         Executes a script block if $PWD's base name od drive name is contained in the specified list of basenames or drives

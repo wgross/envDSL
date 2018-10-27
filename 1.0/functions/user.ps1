@@ -1,4 +1,4 @@
-﻿function user {
+function user {
     <#
     .SYNOPSIS
         Executes a script block if $Env:USERNAME is contained in the given list of names.

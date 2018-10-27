@@ -1,4 +1,4 @@
-﻿function Test-AdminUser {
+function Test-AdminUser {
     process {
         (New-Object System.Security.Principal.WindowsPrincipal([System.Security.Principal.WindowsIdentity]::GetCurrent())).IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator)
     }
